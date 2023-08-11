@@ -1,13 +1,8 @@
 <template>
-    <div class="tableList">
-
-        <div class="filter">
-            <select @click="changeSelectedType('newType')" @change="filterPokemonsByType">
-                <option value="">All</option>
-                <option v-for="type in pokemonTypes" :key="type" :value="type">{{ type }}</option>
-              </select>
+    <div class="tableList" v-if="data">
+        <div v-if="filter"  class="filter">
+              <slot name="Filter"></slot>
         </div>
-
         <table>
             <tr>
                 <th>No</th>
@@ -20,8 +15,8 @@
                 <td>{{ index + 1 }}</td>
                 <td>{{ item.name }}</td>
                 <td> <img :src="item.image" width="40" /> </td>
-                <td> {{ item.types }} </td>
-                <td>  Detail  </td>
+                <td> {{ item.types.join(' | ') }} </td>
+                <td>  <button @click="goDetailPage(item.name)">  Detail </button>  </td>
             </tr>
         </table>
     </div>
@@ -30,23 +25,33 @@
 <script>
 
 import { defineComponent, ref } from 'vue';
+import { useRouter } from 'vue-router';
+
 
 export default defineComponent({  
+    props: {
+        data: {
+            type: Array || Object,
+            required: true,
+        },
+        filter: {
+            type: Boolean,
+            required: false
+        }
+    },
+    setup() {
 
-    props: ['data','pokemonTypes', 'selectedType' , 'filterPokemonsByType'],
+        const router = useRouter()
 
-    setup(props, {emit}){
-        
-        const changeSelectedType = (newType) => {
-            emit('update:selectedType', newType); // Emit event to update selectedType in parent
+         const goDetailPage = (pokemonName) => {
+            router.push({ name: 'DetailPage', params: { pokemonName: pokemonName } });
         };
 
-    return {
-      changeSelectedType,
-    };
+        return {
+            goDetailPage
+        }
 
     }
-    
 })
 
 </script>
@@ -62,7 +67,7 @@ export default defineComponent({
         width: 100%;
 
         td , th { 
-            border: 1px solid #ddd;
+            border: 2px solid #ddd;
             padding: 8px;
         }
 
@@ -71,5 +76,17 @@ export default defineComponent({
         }
     }
 
+    button {
+        padding: 10px;
+        border-radius: 10px;
+        background: red;
+        color: white;
+        cursor: pointer;
+    }
+
+}
+
+.filter {
+    margin: 20px 0px;
 }
 </style>
