@@ -34,7 +34,6 @@
         const visiblePokemons = ref([]);
         const pokemonTypes = ref([]);
         const pages = ref(10);
-        const canLoadMore = ref(true);
         
         const { data, error, loading, fetchPokemons } = useFetchPokemon();
 
